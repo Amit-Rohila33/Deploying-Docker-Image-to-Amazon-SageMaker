@@ -11,7 +11,24 @@
     CMD echo "Hello, World!"
   ```
 In our scenario, we'll need to create a `Dockerfile` that encapsulates the ComfyUI API we've developed. Once you've crafted the Dockerfile, save and close it.
+To configure SageMaker, you also require the corresponding Docker file, as illustrated below.
 
+```
+FROM python:3.8-slim
+
+# Set the working directory
+WORKDIR /opt/ml/model
+
+# Copy the necessary files to the container
+COPY requirements.txt .
+COPY serve.py .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Define the command to run the serving script
+CMD ["python", "serve.py"]
+```
 
 ### Step 2: Build and Test the Docker Image Locally
 
@@ -125,11 +142,11 @@ Before proceeding, `Felipe`, it's essential to create a `domain` and a `role` fo
 2. Create an endpoint configuration:
 
     ```
-    aws sagemaker create-endpoint-config --endpoint-config-name my-endpoint-config --production-variants VariantName=my-variant,ModelName=my-sagemaker-model,InstanceType=<your-instance-type>
+    aws sagemaker create-endpoint-config --endpoint-config-name my-endpoint-config --production-variants VariantName=my-variant,ModelName=my-sagemaker-model,InstanceType=<your-instance-type>,InitialInstanceCount=<your-initial-instance-count>
 
     In my case, the command was:-
 
-    aws sagemaker create-endpoint-config --endpoint-config-name distillerydummysagemakermodelconfig --production-variants VariantName=distillerydummyvariant,ModelName=distillerydummysagemakermodel,InstanceType=ml.t2.medium
+    aws sagemaker create-endpoint-config --endpoint-config-name distillerydummysagemakermodelconfig --production-variants VariantName=distillerydummyvariant,ModelName=distillerydummysagemakermodel,InstanceType=ml.t2.medium,InitialInstanceCount=1
     ```
 
     Replace `<your-instance-type>` with the desired SageMaker instance type. This is a crucial step and the main reason we are utilizing SageMaker, `Felipe`.
@@ -141,7 +158,7 @@ Before proceeding, `Felipe`, it's essential to create a `domain` and a `role` fo
 
     In my case, the command was:
 
-    aws sagemaker create-endpoint --endpoint-name distillerydummyendpoint --endpoint-config-name distillerydummyendpointconfig
+    aws sagemaker create-endpoint --endpoint-name distillerydummyendpoint --endpoint-config-name distillerydummysagemakermodelconfig
     ```
 
 4. Wait for the endpoint to be in the "InService" state:
