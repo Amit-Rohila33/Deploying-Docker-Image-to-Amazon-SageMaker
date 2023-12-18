@@ -5,10 +5,9 @@
 1. Create a file named `Dockerfile` (without any file extension) in a directory with the following content:
 (Random example as we discussed)
 
-`Dockerfile`
+`serve.py`
   ```
-    FROM ubuntu:latest
-    CMD echo "Hello, World!"
+  print("Hello, World")
   ```
 In our scenario, we'll need to create a `Dockerfile` that encapsulates the ComfyUI API we've developed. Once you've crafted the Dockerfile, save and close it.
 To configure SageMaker, you also require the corresponding Docker file, as illustrated below.
